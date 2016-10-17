@@ -61,20 +61,20 @@ char *var_let_asm_name_l(var_ent_t *var) {
     return var->fulln;
 }
 
-int var_asm_len_l(FILE *f, var_ent_t *var) {
+int var_asm_len_l(var_ent_t *var) {
     switch(var->type) {
         case INT:
-            fprintf(f, "_lvars.int.%s:\n. %ld\n", var->name, var->value);
+            fprintf(out, "_lvars.int.%s:\n. %ld\n", var->name, var->value);
             break;
 
         case PTR:
-            if(var->is_var) fprintf(f, "_lvars.ptr.%s:\n. %s\n", var->name, var_let_asm_name_l(&local_vars[var->value]));
-            else fprintf(f, "_lvars.ptr.%s:\n. %ld\n", var->name, var->value);
+            if(var->is_var) fprintf(out, "_lvars.ptr.%s:\n. %s\n", var->name, var_let_asm_name_l(&local_vars[var->value]));
+            else fprintf(out, "_lvars.ptr.%s:\n. %ld\n", var->name, var->value);
             break;
 
         case PPTR:
-            if(var->is_var) fprintf(f, "_lvars.pptr.%s:\n. %s\n", var->name, var_let_asm_name_l(&local_vars[var->value]));
-            else fprintf(f, "_lvars.pptr.%s:\n. %ld\n", var->name, var->value);
+            if(var->is_var) fprintf(out, "_lvars.pptr.%s:\n. %s\n", var->name, var_let_asm_name_l(&local_vars[var->value]));
+            else fprintf(out, "_lvars.pptr.%s:\n. %ld\n", var->name, var->value);
             break;
 
         default:

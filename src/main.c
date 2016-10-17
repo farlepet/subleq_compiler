@@ -69,10 +69,10 @@ int main(int argc, char **argv) {
 
         puts("\n");
 
-        var_asm_gen_g(stdout, var_find_g("test"));
-        var_asm_gen_g(stdout, var_find_g("a"));
-        var_asm_gen_g(stdout, var_find_g("c"));
-        var_asm_gen_g(stdout, var_find_g("f"));
+        var_asm_gen_g(var_find_g("test"));
+        var_asm_gen_g(var_find_g("a"));
+        var_asm_gen_g(var_find_g("c"));
+        var_asm_gen_g(var_find_g("f"));
     }
 
 	return 0;
