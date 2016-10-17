@@ -7,9 +7,9 @@
 int get_loc(char *text, char *str, int len) {
     char ch;
     int i = 0, tp = 0;
-    int sq, dq; // Single quotes, double quotes
+    int sq = 0, dq = 0; // Single quotes, double quotes
     while((ch = text[tp++]) != 0 && (ch != ';')) {
-        if(ch == '/' && !sq && !dq) {
+        if(ch == '/' && !(sq | dq)) {
             ch = text[tp++];
             if(ch == EOF) break;
             if(ch == '/') { // Single-line comment
@@ -29,8 +29,8 @@ int get_loc(char *text, char *str, int len) {
             }
             continue;
         }
-        if((ch == '\"') & !sq) dq = !dq;
-        if((ch == '\'') & !dq) sq = !sq;
+        if((ch == '\"') && !sq) dq = !dq;
+        if((ch == '\'') && !dq) sq = !sq;
         //printf("[i: %d]", i);
         str[i++] = ch;
         if(i == len) {

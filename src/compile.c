@@ -12,10 +12,7 @@
 int compile_function(char *str, func_ent_t *func);
 int compile_handle_func_stmt(char *line, func_ent_t *func);
 
-int compile_file(char *fname, FILE *out) {
-    (void)out;
-
-
+int compile_file(char *fname) {
     FILE *f = fopen(fname, "r");
     if(!f) {
         fprintf(stderr, "compile_file: Could not open file: %s\n", fname);

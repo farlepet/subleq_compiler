@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
     */
 
     if(infile) {
-        compile_file(infile, NULL);
+        compile_file(infile);
     } else {
         // TESTING:
         /*var_create_g("test_var_1", INT, 32, NULL);

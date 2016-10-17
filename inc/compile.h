@@ -3,6 +3,6 @@
 
 #include <stdio.h>
 
-int compile_file(char *fname, FILE *out);
+int compile_file(char *fname);
 
 #endif

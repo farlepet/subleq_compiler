@@ -64,7 +64,7 @@ func_ent_t *func_create_from_line(char *line) {
         n_args++;
     }
 
-    if(n_args) {
+    if(n_args > 0) {
         var_type_t *arg_types = (var_type_t *)malloc(sizeof(var_type_t) * n_args);
         char **arg_names      = (char **)malloc(sizeof(char *) * n_args);
     
@@ -75,6 +75,12 @@ func_ent_t *func_create_from_line(char *line) {
             char *arg_name = strtok(NULL, "\t ");
             arg_types[i] = str_to_type(arg_type);
             if(arg_type[i] == INVLD) {
+                free(arg_types);
+                int j = 0;
+                for(; j < i; j++) {
+                    free(arg_names[i]);
+                }
+                free(arg_names);
                 fprintf(stderr, "func_create_from_line: invalid type!\n");
                 return NULL;
             }
