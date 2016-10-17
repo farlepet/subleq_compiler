@@ -5,10 +5,11 @@
 
 #include <variables.h>
 #include <compile.h>
+#include <globals.h>
 #include <funcs.h>
 
-char *infile = NULL;
-char *outfile = NULL;
+static char *infile = NULL;
+static char *outfile = NULL;
 
 //static FILE *in  = NULL;
 FILE *out = NULL;
@@ -16,7 +17,7 @@ FILE *out = NULL;
 void handle_opts(int, char **);
 void usage(int);
 
-unsigned line = 0;
+//unsigned line = 0;
 
 int main(int argc, char **argv) {
 	handle_opts(argc, argv);
@@ -31,20 +32,6 @@ int main(int argc, char **argv) {
         }
     }
     else out = stdout;
-
-    /*
-	if(!in) {
-		printf("Input file %s could not be opened!", infile);
-		return 1;
-	}
-	char str[1024];
-
-	while(fgets(str, 1024, in)) {
-    }
-
-	fclose(in);
-	fclose(out);
-    */
 
     if(infile) {
         compile_file(infile);
@@ -69,10 +56,10 @@ int main(int argc, char **argv) {
 
         puts("\n");
 
-        var_asm_gen_g(var_find_g("test"));
+        /*var_asm_gen_g(var_find_g("test"));
         var_asm_gen_g(var_find_g("a"));
         var_asm_gen_g(var_find_g("c"));
-        var_asm_gen_g(var_find_g("f"));
+        var_asm_gen_g(var_find_g("f"));*/
     }
 
 	return 0;
@@ -117,7 +104,7 @@ void handle_opts(int argc, char **argv) {
     }
 }
 
-void usage(int retval) {
+void __attribute__((noreturn)) usage(int retval) {
 	puts(
     "USAGE: osic-asm [OPTIONS] -i infile -o outfile\n"
 	"  OPTIONS:\n"
@@ -125,5 +112,4 @@ void usage(int retval) {
 	"    -i: Source file to compile.\n"
 	"    -o: Output assembly file.\n");
 	exit(retval);
-}
-
+} 

@@ -13,21 +13,21 @@ typedef struct {
     char       name[64];  // Variable name
     char       fulln[96]; // Full variable name
     var_type_t type;      // Variable type
-    int64_t    value;     // Initial value
     int        is_var;    // Is the `value` an index in the variable array?
+    int64_t    value;     // Initial value
 } var_ent_t;
 
-int var_create_g(char *, var_type_t, uint64_t, char *);
+int var_create_g(char *, var_type_t, int64_t, char *);
 var_ent_t *var_find_g(char *name);
-int var_asm_gen_g(var_ent_t *var);
-int vars_asm_gen_g();
+int vars_asm_gen_g(void);
+char *var_get_asm_name_g(var_ent_t *var);
 
-int var_create_l(char *, var_type_t, uint64_t, char *);
+int var_create_l(char *, var_type_t, int64_t, char *);
 var_ent_t *var_find_l(char *name);
-int var_asm_gen_l(var_ent_t *var);
 void lvars_set_func_name(char *name);
-void clear_local_vars();
-int vars_asm_gen_l();
+char *var_get_asm_name_l(var_ent_t *var);
+void clear_local_vars(void);
+int vars_asm_gen_l(void);
 
 int var_create_from_line(char *line, int is_global);
 

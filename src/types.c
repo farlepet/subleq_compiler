@@ -28,7 +28,8 @@ char *type_to_str(var_type_t type) {
         case INT:   return "int";
         case PTR:   return "ptr";
         case PPTR:  return "pptr";
+        case STR:   return "str";
         case INVLD: return "invld";
-        default:    return "";
     }
+    return "";
 }

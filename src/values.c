@@ -5,6 +5,8 @@
 #include <ctype.h>
 
 #include <variables.h>
+#include <globals.h>
+#include <values.h>
 #include <funcs.h>
 
 func_ent_t *current_func = NULL;

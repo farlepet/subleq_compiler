@@ -16,6 +16,7 @@ typedef struct {
 } func_ent_t;
 
 //func_ent_t *parse_func(char *func);
+func_ent_t *func_create(char *name, var_type_t ret_type, int n_args, var_type_t *arg_types, char **arg_names);
 func_ent_t *func_create_from_line(char *line);
 
 var_type_t func_arg_type(func_ent_t *func, char *arg);

@@ -6,9 +6,9 @@
 #include <funcs.h>
 
 
-int n_funcs = 0;
+static int n_funcs = 0;
 // TODO: Allocate at run-time depending on number of functions in the source
-func_ent_t functions[MAX_FUNC_ENTRIES];
+static func_ent_t functions[MAX_FUNC_ENTRIES];
 
 func_ent_t *func_create(char *name, var_type_t ret_type, int n_args, var_type_t *arg_types, char **arg_names) {
     if(n_args && ((arg_types == NULL) || (arg_names == NULL))) {
@@ -20,7 +20,7 @@ func_ent_t *func_create(char *name, var_type_t ret_type, int n_args, var_type_t 
     functions[n_funcs].n_args    = n_args;
     functions[n_funcs].arg_types = arg_types;
     functions[n_funcs].arg_names = arg_names;
-    functions[n_funcs].arg_fulln = (char **)malloc(sizeof(char *) * n_args);
+    functions[n_funcs].arg_fulln = (char **)malloc(sizeof(char *) * (unsigned)n_args);
     int i = 0;
     size_t namelen = strlen(name);
     for(; i < n_args; i++) {
@@ -65,8 +65,8 @@ func_ent_t *func_create_from_line(char *line) {
     }
 
     if(n_args > 0) {
-        var_type_t *arg_types = (var_type_t *)malloc(sizeof(var_type_t) * n_args);
-        char **arg_names      = (char **)malloc(sizeof(char *) * n_args);
+        var_type_t *arg_types = (var_type_t *)malloc(sizeof(var_type_t) * (unsigned)n_args);
+        char **arg_names      = (char **)malloc(sizeof(char *) * (unsigned)n_args);
     
         // Individually parse each argument
         int i;

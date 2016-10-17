@@ -1,6 +1,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <get_loc.h>
+
 /*
  * Get a line of code (ending in a semi-colon) from text.
  */

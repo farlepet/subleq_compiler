@@ -11,6 +11,9 @@ EXEC	= $(MAINDIR)/subleq_compiler
 
 CFLAGS  = -Wall -Wextra -Werror -I $(INC) -g
 LDFLAGS = 
+ifeq ($(CC),clang)
+	CFLAGS += -Weverything
+endif
 
 all: $(OBJ)
 	@echo -e "\033[33m  \033[1mLD\033[21m    \033[34m$(EXEC)\033[0m"
