@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include <get_block.h>
+#include <constants.h>
 #include <get_loc.h>
 #include <globals.h>
 #include <compile.h>
@@ -67,6 +68,7 @@ int compile_file(char *fname) {
     }
 
     vars_asm_gen_g();
+    const_write_consts();
 
     return 0;
 }
@@ -138,7 +140,16 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
         if(get_value(rhs, &val, &rhs_var)) return 1;
         // FIXME:
         // TODO: Support constants!!!!!!!!
-        fprintf(out, "%s, %s\n_Z, %s\n%s, _Z\n_Z, _Z\n", rhs_var, rhs_var, lhs_var, rhs_var);
+        if(rhs_var) {
+            fprintf(out, "%s, %s\n_Z, %s\n%s, _Z\n_Z, _Z\n", rhs_var, rhs_var, lhs_var, rhs_var);
+        } else {
+            char *clbl = const_get_name(-val);
+            if(!clbl) {
+                fprintf(stderr, "compile_handle_func_stmt: Could not create constant!\n");
+                return 1;
+            }
+            fprintf(out, "%s, %s\n%s, %s\n", lhs_var, lhs_var, clbl, lhs_var);
+        }
     }
     
     else {
