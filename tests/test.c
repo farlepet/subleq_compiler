@@ -7,6 +7,10 @@ func int tfunc1(int a1, int a2) {
     rv = 2;
     rv++;
     rv--;
+    rv += 2;
+    rv += a2;
+    rv -= a1;
+    rv -= 8;
     return rv;
 }
 

@@ -69,6 +69,7 @@ int compile_file(char *fname) {
 
     vars_asm_gen_g();
     const_write_consts();
+    fprintf(out, "_cZ:\n. 0\n");
 
     return 0;
 }
@@ -147,8 +148,46 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
 
     } else if(strstr(line, "+=")) {
         // Add to variable
+        char *lhs = strtok(line, " +="); // Left-hand side
+        char *rhs = strtok(NULL, " +="); // Right-hand side
+        char *lhs_var = NULL, *rhs_var = NULL; int64_t val;
+        if(get_value(lhs, &val, &lhs_var)) return 1;
+        if(lhs_var == NULL) {
+            fprintf(stderr, "compile_handle_func_stmt: Left-hand side of `+=` operator must be a variable!\n");
+            return 1;
+        }
+        if(get_value(rhs, &val, &rhs_var)) return 1;
+        if(rhs_var) {
+            fprintf(out, "%s, _cZ\n_cZ, %s\n_cZ, _cZ\n", rhs_var, lhs_var);
+        } else {
+            char *clbl = const_get_name(-val);
+            if(!clbl) {
+                fprintf(stderr, "compile_handle_func_stmt: Could not create constant!\n");
+                return 1;
+            }
+            fprintf(out, "%s, %s\n", clbl, lhs_var);
+        }
     } else if(strstr(line, "-=")) {
-        // Decrement from variable
+        // Subtract from variable
+        char *lhs = strtok(line, " -="); // Left-hand side
+        char *rhs = strtok(NULL, " -="); // Right-hand side
+        char *lhs_var = NULL, *rhs_var = NULL; int64_t val;
+        if(get_value(lhs, &val, &lhs_var)) return 1;
+        if(lhs_var == NULL) {
+            fprintf(stderr, "compile_handle_func_stmt: Left-hand side of `+=` operator must be a variable!\n");
+            return 1;
+        }
+        if(get_value(rhs, &val, &rhs_var)) return 1;
+        if(rhs_var) {
+            fprintf(out, "%s, %s\n", rhs_var, lhs_var);
+        } else {
+            char *clbl = const_get_name(val);
+            if(!clbl) {
+                fprintf(stderr, "compile_handle_func_stmt: Could not create constant!\n");
+                return 1;
+            }
+            fprintf(out, "%s, %s\n", clbl, lhs_var);
+        }
     } else if(strstr(line, "*=")) {
         // Multiply variable by
     } else if(strstr(line, "/=")) {
@@ -165,7 +204,7 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
         }
         if(get_value(rhs, &val, &rhs_var)) return 1;
         if(rhs_var) {
-            fprintf(out, "%s, %s\n_Z, %s\n%s, _Z\n_Z, _Z\n", rhs_var, rhs_var, lhs_var, rhs_var);
+            fprintf(out, "%s, %s\n%s, _cZ\n_cZ, %s\n_cZ, _cZ\n", lhs_var, lhs_var, rhs_var, lhs_var);
         } else {
             char *clbl = const_get_name(-val);
             if(!clbl) {
