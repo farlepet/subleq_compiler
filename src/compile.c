@@ -116,6 +116,25 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
     fprintf(out, "\n# %s\n", line);
     if(strstr(line, "return") == line) {
         // TODO: handle text after return!
+        strtok(line, " ");
+        char *rhs = strtok(NULL, " ");
+        if(rhs) {
+            char *var; int64_t val;
+            if(get_value(rhs, &val, &var)) {
+                fprintf(stderr, "compile_handle_func_stmt: Could not get right-hand size of `return`!\n");
+                return 1;
+            }
+            if(var) {
+                fprintf(out, "%s.ret, %s.ret\n%s, _cZ\n_cZ, %s.ret\n_cZ, _cZ\n", func->name, func->name, var, func->name);
+            } else {
+                char *clbl = const_get_name(-val);
+                if(!clbl) {
+                    fprintf(stderr, "compile_handle_func_stmt: Could not create constant!\n");
+                    return 1;
+                }
+                fprintf(out, "%s.ret, %s.ret\n%s, %s.ret\n", func->name, func->name, clbl, func->name);
+            }
+        }
         fprintf(out, "ret\n");
     } else if(strstr(line, "++")) {
         // Increment variable
