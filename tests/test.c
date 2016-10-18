@@ -5,6 +5,8 @@ func int tfunc1(int a1, int a2) {
     int rv;
     rv = a1;
     rv = 2;
+    rv++;
+    rv--;
     return rv;
 }
 

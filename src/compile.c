@@ -112,13 +112,39 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
     (void)func;
     while(isspace(*line)) line++;
     fprintf(stderr, "Curent line: [%s]\n", line);
+    fprintf(out, "\n# %s\n", line);
     if(strstr(line, "return") == line) {
         // TODO: handle text after return!
         fprintf(out, "ret\n");
     } else if(strstr(line, "++")) {
         // Increment variable
+        char *lhs = strtok(line, "++");
+        char *var; int64_t val;
+        if(get_value(lhs, &val, &var)) {
+            fprintf(stderr, "compile_handle_func_stmt: Left-hand side of `++` operator must be a variable!\n");
+            return 1;
+        }
+        char *neg1 = const_get_name(-1);
+        if(neg1 == NULL) {
+            fprintf(stderr, "compile_handle_func_stmt: Could not create constant!\n");
+            return 1;
+        }
+        fprintf(out, "%s, %s\n", neg1, lhs);
     } else if(strstr(line, "--")) {
         // Decrement variable
+        char *lhs = strtok(line, "--");
+        char *var; int64_t val;
+        if(get_value(lhs, &val, &var)) {
+            fprintf(stderr, "compile_handle_func_stmt: Left-hand side of `--` operator must be a variable!\n");
+            return 1;
+        }
+        char *one = const_get_name(1);
+        if(one == NULL) {
+            fprintf(stderr, "compile_handle_func_stmt: Could not create constant!\n");
+            return 1;
+        }
+        fprintf(out, "%s, %s\n", one, lhs);
+
     } else if(strstr(line, "+=")) {
         // Add to variable
     } else if(strstr(line, "-=")) {
@@ -138,8 +164,6 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
             return 1;
         }
         if(get_value(rhs, &val, &rhs_var)) return 1;
-        // FIXME:
-        // TODO: Support constants!!!!!!!!
         if(rhs_var) {
             fprintf(out, "%s, %s\n_Z, %s\n%s, _Z\n_Z, _Z\n", rhs_var, rhs_var, lhs_var, rhs_var);
         } else {
