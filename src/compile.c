@@ -50,7 +50,6 @@ int compile_file(char *fname) {
         } else if(get_type(text + tp) != INVLD) {
             int nchrs = get_loc(text + tp, tmp, 512);
             var_create_from_line(tmp, 1);
-            //printf("[tp: %d]", tp);
             tp += (unsigned)nchrs;
         } else if(text[tp] == '/') {
             if(text[tp+1] == '/') {
@@ -115,10 +114,10 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
     fprintf(stderr, "Curent line: [%s]\n", line);
     fprintf(out, "\n# %s\n", line);
     if(strstr(line, "return") == line) {
-        // TODO: handle text after return!
+        // Return from function
         strtok(line, " ");
         char *rhs = strtok(NULL, " ");
-        if(rhs) {
+        if(rhs) { // Check if there is an argument to `return`
             char *var; int64_t val;
             if(get_value(rhs, &val, &var)) {
                 fprintf(stderr, "compile_handle_func_stmt: Could not get right-hand size of `return`!\n");
@@ -209,8 +208,47 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
         }
     } else if(strstr(line, "*=")) {
         // Multiply variable by
+        char *lhs = strtok(line, " *="); // Left-hand side
+        char *rhs = strtok(NULL, " *="); // Right-hand side
+        char *lhs_var = NULL, *rhs_var = NULL; int64_t val;
+        if(get_value(lhs, &val, &lhs_var)) return 1;
+        if(lhs_var == NULL) {
+            fprintf(stderr, "compile_handle_func_stmt: Left-hand side of `*=` operator must be a variable!\n");
+            return 1;
+        }
+        if(get_value(rhs, &val, &rhs_var)) return 1;
+        if(rhs_var) {
+            fprintf(out, "mul %s, %s\n", lhs_var, rhs_var);
+        } else {
+            char *clbl = const_get_name(val);
+            if(!clbl) {
+                fprintf(stderr, "compile_handle_func_stmt: Could not create constant!\n");
+                return 1;
+            }
+            fprintf(out, "mul %s, %s\n", lhs_var, clbl);
+        }
     } else if(strstr(line, "/=")) {
         // Divide variable by
+        char *lhs = strtok(line, " /="); // Left-hand side
+        char *rhs = strtok(NULL, " /="); // Right-hand side
+        char *lhs_var = NULL, *rhs_var = NULL; int64_t val;
+        if(get_value(lhs, &val, &lhs_var)) return 1;
+        if(lhs_var == NULL) {
+            fprintf(stderr, "compile_handle_func_stmt: Left-hand side of `/=` operator must be a variable!\n");
+            return 1;
+        }
+        if(get_value(rhs, &val, &rhs_var)) return 1;
+        if(rhs_var) {
+            fprintf(out, "div %s, %s\n", lhs_var, rhs_var);
+        } else {
+            char *clbl = const_get_name(val);
+            if(!clbl) {
+                fprintf(stderr, "compile_handle_func_stmt: Could not create constant!\n");
+                return 1;
+            }
+            fprintf(out, "div %s, %s\n", lhs_var, clbl);
+        }
+
     } else if(strstr(line, "=")) {
         // Assign value to variable
         char *lhs = strtok(line, " ="); // Left-hand side
@@ -232,6 +270,12 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
             }
             fprintf(out, "%s, %s\n%s, %s\n", lhs_var, lhs_var, clbl, lhs_var);
         }
+    } else if(strstr(line, "if") == line) {
+        // Conditional statement
+    } else if(strstr(line, "while") == line) {
+        // While loop
+    } else if(strstr(line, "for") == line) {
+        // For loop
     }
     
     else {

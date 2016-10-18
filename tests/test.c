@@ -11,7 +11,10 @@ func int tfunc1(int a1, int a2) {
     rv += a2;
     rv -= a1;
     rv -= 8;
+    rv *= 32;
+    rv *= a2;
+    rv /= 6;
     return rv;
 }
 
-func int tfunc2() { }
+func int tfunc2() { return; }

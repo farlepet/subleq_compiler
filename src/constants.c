@@ -26,7 +26,6 @@ char *const_get_name(int64_t n) {
     static char ret[512];
     int idx = const_get_idx(n);
     if(idx < 0) {
-        idx = n_constants;
         if(const_create(n)) {
             fprintf(stderr, "const_get_name: Maximum number of constants reached!\n");
             return NULL;

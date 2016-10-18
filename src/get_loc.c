@@ -28,6 +28,9 @@ int get_loc(char *text, char *str, int len) {
                     fprintf(stderr, "get_loc: Could not find end to '/*' comment!\n");
                     return 1;
                 }
+            } else {
+                str[i++] = '/';
+                str[i++] = ch;
             }
             continue;
         }
