@@ -1,86 +1,57 @@
 C-like language
 
+Variables
+================================
+
 Only one type (int) (and ptr/pptr which is analagous to int */int **) which corresponds to an integer of a size dependant on the target word length
 
-int t = 0;
+int t = 0, f, jl = -512;
+
+
+# not yet implemented:
 ptr t_ptr = &t;
 pptr t_ptr_ptr = &t_ptr;
 int t[4]; // Treated as a 'ptr'
 
 
+Values
+=================================
+
+Integer values may be represented in different bases by adding a prefix:
+    * Octal: 0737
+    * Decimal: 1234
+    * Hexadecimal: 0xDEAD1234
 
 
+Functions
+==================================
 
+Functions are defined as follows:
+func [return type] [function name]([arg 1 type] [arg 1 name], [arg 2 type] [arg 2 name]...)
 
-int var1 = 32; => `_vars.var1:\n. 32\n`
-
-char *str = "Test"; => ```
-arrays.str:
-. "Test"
-. 0
-vars.str:
-. arrays.str
-```
-
-int arr[8] = { 1, 2, 3, 4 }; => ```
-arrays.arr:
-. 1, 2, 3, 4, 0, 0, 0, 0
-vars.arr:
-. arrays.arr
-```
-
-void main() {
-    func(32, 64);
+Example:
+func int add(int a, int b) {
+    a += b;
+    return a;
 }
 
-int func(int n, int ptr) {
-    int val = ptr + n;
-    return val;
-}
-~~>
+
+Integer Operations
+===================================
+
+Available operators: =, ++, --, +=, -=, *=, /=
+
+Only one operation can be performed per line. (e.g.: `a = b + 1` is invalid)
+
+Example: (a = (2b^2 + 6b - 3) / 2)
 ```
-
-main:
-    mov func.arg.n, vals.32
-    mov func.arg.ptr, vals.64
-# OR
-    func.arg.n, func.arg.n
-    nvals.32, func.arg.n
-    func.arg.ptr, func.arg.ptr
-    nvals.64, func.arg.ptr
-
-    call func
-    ret
-
-func: # NOTE: compiler will likely not create code this optimized
-    func.arg.ptr, _Z
-    func.arg.n, _Z
-    _Z, func.vars.val
-    _Z, _Z
-
-    func.ret, func.ret
-    func.vars.val, _Z
-    _Z, func.ret
-    _Z, _Z
-    ret
-
-func.arg.n:
-. 0
-func.arg.ptr:
-. 0
-func.vars.val:
-. 0
-func.ret:
-. 0
-
-
-vals.32:
-. 32
-vals.64:
-. 64
-# OR
-nvals.32:
-. -32
-nvals.64:
-. -64
+int a, tmp;
+a = b;
+a *= b;
+a *= 2;
+tmp = b;
+tmp *= 6;
+a += tmp;
+a -= 3;
+a /= 2;
 ```
