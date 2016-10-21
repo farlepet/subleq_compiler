@@ -14,6 +14,8 @@
 int compile_function(char *str, func_ent_t *func);
 int compile_handle_func_stmt(char *line, func_ent_t *func);
 
+static int label_n = 0;
+
 int compile_file(char *fname) {
     FILE *f = fopen(fname, "r");
     if(!f) {
@@ -259,9 +261,23 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
             fprintf(stderr, "compile_handle_func_stmt: Left-hand side of `=` operator must be a variable!\n");
             return 1;
         }
+        while(isspace(*rhs)) rhs++;
+        int ptr_rtv = 0; // Are we retrieving data from a pointer?
+        if(rhs[0] == '*') {
+            ptr_rtv = 1;
+            rhs++;
+        }
         if(get_value(rhs, &val, &rhs_var)) return 1;
         if(rhs_var) {
-            fprintf(out, "%s, %s\n%s, _cZ\n_cZ, %s\n_cZ, _cZ\n", lhs_var, lhs_var, rhs_var, lhs_var);
+            if(ptr_rtv) {
+                // TODO
+                fprintf(out, "%s, %s\n_ptr_rtv_%d.mv, _ptr_rtv_%d.mv\n", lhs_var, lhs_var, label_n, label_n);
+                fprintf(out, "%s, _cZ\n_cZ, _ptr_rtv_%d.mv\n_cZ, _cZ\n", rhs_var, label_n);
+                fprintf(out, "_ptr_rtv_%d.mv:\n0, _cZ\n_cZ, %s\n_cZ, _cZ\n", label_n, lhs_var);
+                label_n++;
+            } else {
+                fprintf(out, "%s, %s\n%s, _cZ\n_cZ, %s\n_cZ, _cZ\n", lhs_var, lhs_var, rhs_var, lhs_var);
+            }
         } else {
             char *clbl = const_get_name(-val);
             if(!clbl) {
