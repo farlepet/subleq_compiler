@@ -24,10 +24,19 @@ int get_value(char *str, int64_t *value, char **var_ptr) {
         *var_ptr = 0;
         return 0;
     } else {
+        int is_pointer = 0;
+        if(str[0] == '&') {
+            is_pointer = 1;
+            str++;
+        }
         if(current_func) {
             int i;
             for(i = 0; i < current_func->n_args; i++) {
                 if(!strcmp(current_func->arg_names[i], str)) {
+                    if(is_pointer) {
+                        fprintf(stderr, "get_value: Pointers to function arguments is currently not allowed\n");
+                        return 1;
+                    }
                     if(var_ptr == NULL) return 0;
                     else {
                         *var_ptr = current_func->arg_fulln[i];
@@ -47,7 +56,15 @@ int get_value(char *str, int64_t *value, char **var_ptr) {
         if(var_ptr == NULL) {
             return 0;
         } else {
-            *var_ptr = var->fulln;
+            if(is_pointer) {
+                if(var->ptr == NULL) {
+                    var->ptr = (char *)malloc(strlen(var->fulln + 5));
+                    sprintf(var->ptr, "ptr.%s", var->fulln);
+                }
+                *var_ptr = var->ptr;
+            } else {
+                *var_ptr = var->fulln;
+            }
             return 0;
         }
     }

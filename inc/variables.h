@@ -15,6 +15,7 @@ typedef struct {
     var_type_t type;      // Variable type
     int        is_var;    // Is the `value` an index in the variable array?
     int64_t    value;     // Initial value
+    char      *ptr;       // Name of pointer variable, is created if a pointer is requested
 } var_ent_t;
 
 int var_create_g(char *, var_type_t, int64_t, char *);

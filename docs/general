@@ -6,11 +6,11 @@ Variables
 Only one type (int) (and ptr/pptr which is analagous to int */int **) which corresponds to an integer of a size dependant on the target word length
 
 int t = 0, f, jl = -512;
+ptr t_ptr;
+t_ptr = &t;
 
 
 # not yet implemented:
-ptr t_ptr = &t;
-pptr t_ptr_ptr = &t_ptr;
 int t[4]; // Treated as a 'ptr'
 
 
@@ -27,13 +27,26 @@ Functions
 ==================================
 
 Functions are defined as follows:
-func [return type] [function name]([arg 1 type] [arg 1 name], [arg 2 type] [arg 2 name]...)
+func [return type] [function name]([arg 1 type] [arg 1 name], [arg 2 type] [arg 2 name]...) { }
 
 Example:
 func int add(int a, int b) {
     a += b;
     return a;
 }
+
+All functions must include a return statement, but the return statement doesn't neccessarially have to include any value.
+
+# not yet implemented:
+Function Calls
+===================================
+
+Functions are called in the following manner:
+func(arg1, arg2, ...);
+
+Variables can be set to the functions return value like so:
+var = func(arg1, arg2, ...);
+You can only set a variable to the output of the function, you cannot do any arithemtic on the same line.
 
 
 Integer Operations

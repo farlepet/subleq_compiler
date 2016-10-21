@@ -16,6 +16,7 @@ int var_create_g(char *name, var_type_t type, int64_t value, char *var_ptr) {
     strcpy(global_vars[n_global_vars].name, name);
     sprintf(global_vars[n_global_vars].fulln, "_gvars.%s.%s", type_to_str(type), name);
     global_vars[n_global_vars].type = type;
+    global_vars[n_global_vars].ptr  = NULL;
     if(var_ptr != NULL) { // Variable is set as a pointer to another variable
         int i;
         for(i = 0; i < n_global_vars; ++i) { // Find variable index
@@ -59,7 +60,9 @@ int vars_asm_gen_g() {
     for(; i < n_global_vars; i++) {
         //if(var_asm_gen_g(f, &global_vars[i])) return 1;
         if(fprintf(out, "%s:\n. %ld\n", global_vars[i].fulln, global_vars[i].value) < 0) return 1;
-        // TODO: support pointers
+        if(global_vars[i].ptr != NULL) {
+            fprintf(out, "%s:\n. %s\n", global_vars[i].ptr, global_vars[i].fulln);
+        }
     }
     return 0;
 }

@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 #include <variables.h>
@@ -17,6 +18,7 @@ int var_create_l(char *name, var_type_t type, int64_t value, char *var_ptr) {
     strcpy(local_vars[n_local_vars].name, name);
     sprintf(local_vars[n_local_vars].fulln, "%s.vars.%s.%s", curr_fname, type_to_str(type), name);
     local_vars[n_local_vars].type = type;
+    local_vars[n_local_vars].ptr  = NULL;
     if(var_ptr != NULL) { // Variable is set as a pointer to another variable
         int i;
         for(i = 0; i < current_func->n_args; i++) {
@@ -66,7 +68,14 @@ void lvars_set_func_name(char *name) {
 }
 
 void clear_local_vars() {
-    n_local_vars = 0;
+    if(n_local_vars == 0) return;
+    do {
+        n_local_vars--;
+        if(local_vars[n_local_vars].ptr != NULL) {
+            free(local_vars[n_local_vars].ptr);
+            local_vars[n_local_vars].ptr = NULL;
+        }
+    } while(n_local_vars);
 }
 
 int vars_asm_gen_l() {
@@ -81,6 +90,9 @@ int vars_asm_gen_l() {
         }
         else {
             if(fprintf(out, "%s:\n. %ld\n", local_vars[i].fulln, local_vars[i].value) < 0) return 1;
+        }
+        if(local_vars[i].ptr != NULL) {
+            fprintf(out, "%s:\n. %s\n", local_vars[i].ptr, local_vars[i].fulln);
         }
     }
     return 0;
