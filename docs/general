@@ -3,15 +3,18 @@ C-like language
 Variables
 ================================
 
-Only one type (int) (and ptr/pptr which is analagous to int */int **) which corresponds to an integer of a size dependant on the target word length
+Only one type (int) which corresponds to an integer of a size dependant on the target word length
 
 int t = 0, f, jl = -512;
-ptr t_ptr;
+int t_ptr;
 t_ptr = &t;
 
+An integer can also act as a pointer when prepended with `*`:
+int ptr = 0x100;
+*ptr = 32;
 
 # not yet implemented:
-int t[4]; // Treated as a 'ptr'
+int t[4];
 
 
 Values

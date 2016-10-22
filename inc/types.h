@@ -5,9 +5,9 @@
 typedef enum {
     INVLD = -1, // Invalid type
     INT = 0,    // Generic integer
-    PTR,        // Integer pointer
+    /*PTR,        // Integer pointer
     PPTR,       // Integer pointer pointer
-    STR         // String
+    STR         // String*/
 } var_type_t;
 
 var_type_t str_to_type(char *str);
