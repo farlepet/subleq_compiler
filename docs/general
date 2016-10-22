@@ -71,3 +71,10 @@ a += tmp;
 a -= 3;
 a /= 2;
 ```
+
+
+Pointers
+==================================
+
+There are no specific pointer types, any integer can be accessed as a pointer by prepending a `*`
+Modifying specific parts of memory can be done like this: `*0x100 = value; *0x320 = -3;`

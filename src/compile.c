@@ -255,15 +255,15 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
         // Assign value to variable
         char *lhs = strtok(line, " ="); // Left-hand side
         char *rhs = strtok(NULL, " ="); // Right-hand side
-        char *lhs_var = NULL, *rhs_var = NULL; int64_t val;
+        char *lhs_var = NULL, *rhs_var = NULL; int64_t lval, val;
         int ptr_set = 0;
         while(isspace(*lhs)) lhs++;
         if(lhs[0] == '*') {
             ptr_set = 1;
             lhs++;
         }
-        if(get_value(lhs, &val, &lhs_var)) return 1;
-        if(lhs_var == NULL) {
+        if(get_value(lhs, &lval, &lhs_var)) return 1;
+        if(lhs_var == NULL && !ptr_set) {
             fprintf(stderr, "compile_handle_func_stmt: Left-hand side of `=` operator must be a variable!\n");
             return 1;
         }
@@ -282,10 +282,14 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
                 fprintf(out, "_ptr_rtv_%d.mv:\n0, _cZ\n_cZ, %s\n_cZ, _cZ\n", label_n, lhs_var);
                 label_n++;
             } else if(ptr_set) {
-                fprintf(out, "_ptr_set_%d.mv$0, _ptr_set_%d.mv$0\n_ptr_set_%d.mv$1, _ptr_set_%d.mv$1\n_ptr_set_%d.mv$7, _ptr_set_%d.mv$7\n", label_n, label_n, label_n, label_n, label_n, label_n);
-                fprintf(out, "%s, _cZ\n_cZ, _ptr_set_%d.mv$0\n_cZ, _ptr_set_%d.mv$1\n_cZ, _ptr_set_%d.mv$7\n_cZ, _cZ\n", lhs_var, label_n, label_n, label_n);
-                fprintf(out, "_ptr_set_%d.mv:\n0, 0\n%s, _cZ\n _cZ, 0\n", label_n, rhs_var);
-                label_n++;
+                if(lhs_var) {
+                    fprintf(out, "_ptr_set_%d.mv$0, _ptr_set_%d.mv$0\n_ptr_set_%d.mv$1, _ptr_set_%d.mv$1\n_ptr_set_%d.mv$7, _ptr_set_%d.mv$7\n", label_n, label_n, label_n, label_n, label_n, label_n);
+                    fprintf(out, "%s, _cZ\n_cZ, _ptr_set_%d.mv$0\n_cZ, _ptr_set_%d.mv$1\n_cZ, _ptr_set_%d.mv$7\n_cZ, _cZ\n", lhs_var, label_n, label_n, label_n);
+                    fprintf(out, "_ptr_set_%d.mv:\n0, 0\n%s, _cZ\n _cZ, 0\n", label_n, rhs_var);
+                    label_n++;
+                } else {
+                    fprintf(out, "%ld, %ld\n%s, _cZ\n_cZ, %ld\n_cZ, _cZ\n", lval, lval, rhs_var, lval);
+                }
             } else {
                 fprintf(out, "%s, %s\n%s, _cZ\n_cZ, %s\n_cZ, _cZ\n", lhs_var, lhs_var, rhs_var, lhs_var);
             }
@@ -296,10 +300,14 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
                 return 1;
             }
             if(ptr_set) {
-                fprintf(out, "_ptr_set_%d.mv$0, _ptr_set_%d.mv$0\n_ptr_set_%d.mv$1, _ptr_set_%d.mv$1\n_ptr_set_%d.mv$4, _ptr_set_%d.mv$7\n", label_n, label_n, label_n, label_n, label_n, label_n);
-                fprintf(out, "%s, _cZ\n_cZ, _ptr_set_%d.mv$0\n_cZ, _ptr_set_%d.mv$1\n_cZ, _ptr_set_%d.mv$4\n_cZ, _cZ\n", lhs_var, label_n, label_n, label_n);
-                fprintf(out, "_ptr_set_%d.mv:\n0, 0\n%s, 0\n", label_n, clbl);
-                label_n++;
+                if(lhs_var) {
+                    fprintf(out, "_ptr_set_%d.mv$0, _ptr_set_%d.mv$0\n_ptr_set_%d.mv$1, _ptr_set_%d.mv$1\n_ptr_set_%d.mv$4, _ptr_set_%d.mv$7\n", label_n, label_n, label_n, label_n, label_n, label_n);
+                    fprintf(out, "%s, _cZ\n_cZ, _ptr_set_%d.mv$0\n_cZ, _ptr_set_%d.mv$1\n_cZ, _ptr_set_%d.mv$4\n_cZ, _cZ\n", lhs_var, label_n, label_n, label_n);
+                    fprintf(out, "_ptr_set_%d.mv:\n0, 0\n%s, 0\n", label_n, clbl);
+                    label_n++;
+                } else {
+                    fprintf(out, "%ld, %ld\n%s, %ld\n", lval, lval, clbl, lval);
+                }
             } else {
                 fprintf(out, "%s, %s\n%s, %s\n", lhs_var, lhs_var, clbl, lhs_var);
             }
