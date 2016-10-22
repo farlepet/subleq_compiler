@@ -256,6 +256,12 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
         char *lhs = strtok(line, " ="); // Left-hand side
         char *rhs = strtok(NULL, " ="); // Right-hand side
         char *lhs_var = NULL, *rhs_var = NULL; int64_t val;
+        int ptr_set = 0;
+        while(isspace(*lhs)) lhs++;
+        if(lhs[0] == '*') {
+            ptr_set = 1;
+            lhs++;
+        }
         if(get_value(lhs, &val, &lhs_var)) return 1;
         if(lhs_var == NULL) {
             fprintf(stderr, "compile_handle_func_stmt: Left-hand side of `=` operator must be a variable!\n");
@@ -275,6 +281,10 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
                 fprintf(out, "%s, _cZ\n_cZ, _ptr_rtv_%d.mv\n_cZ, _cZ\n", rhs_var, label_n);
                 fprintf(out, "_ptr_rtv_%d.mv:\n0, _cZ\n_cZ, %s\n_cZ, _cZ\n", label_n, lhs_var);
                 label_n++;
+            } else if(ptr_set) {
+                fprintf(out, "_ptr_set_%d.mv$0, _ptr_rtv_%d.mv$0\n_ptr_set_%d.mv$1, _ptr_rtv_%d.mv$1\n_ptr_set_%d.mv$7, _ptr_rtv_%d.mv$7\n", label_n, label_n, label_n, label_n, label_n, label_n);
+                fprintf(out, "%s, _cZ\n_cZ, _ptr_set_%d.mv$0\n_cZ, _ptr_set_%d.mv$1\n_cZ, _ptr_set_%d.mv$7\n_cZ, _cZ\n", lhs_var, label_n, label_n, label_n);
+                fprintf(out, "_ptr_set_%d.mv:\n0, 0\n%s, _cZ\n _cZ, 0\n", label_n, rhs_var);
             } else {
                 fprintf(out, "%s, %s\n%s, _cZ\n_cZ, %s\n_cZ, _cZ\n", lhs_var, lhs_var, rhs_var, lhs_var);
             }
@@ -284,7 +294,13 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
                 fprintf(stderr, "compile_handle_func_stmt: Could not create constant!\n");
                 return 1;
             }
-            fprintf(out, "%s, %s\n%s, %s\n", lhs_var, lhs_var, clbl, lhs_var);
+            if(ptr_set) {
+                fprintf(out, "_ptr_set_%d.mv$0, _ptr_rtv_%d.mv$0\n_ptr_set_%d.mv$1, _ptr_rtv_%d.mv$1\n_ptr_set_%d.mv$4, _ptr_rtv_%d.mv$4\n", label_n, label_n, label_n, label_n, label_n, label_n);
+                fprintf(out, "%s, _cZ\n_cZ, _ptr_set_%d.mv$0\n_cZ, _ptr_set_%d.mv$1\n_cZ, _ptr_set_%d.mv$4\n_cZ, _cZ\n", lhs_var, label_n, label_n, label_n);
+                fprintf(out, "_ptr_set_%d.mv:\n0, 0\n%s, 0\n", label_n, clbl);
+            } else {
+                fprintf(out, "%s, %s\n%s, %s\n", lhs_var, lhs_var, clbl, lhs_var);
+            }
         }
     } else if(strstr(line, "if") == line) {
         // Conditional statement

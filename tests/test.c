@@ -9,6 +9,7 @@ func int tfunc1(int a1, int a2) {
     rv_ptr = &rv;
 
     rtv = *rv_ptr;
+    *rv_ptr = 32;
 
     return rv;
 }
