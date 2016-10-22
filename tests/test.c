@@ -1,17 +1,6 @@
-int tv1, tv2 = 1, tv3 = -32;
-//ptr i = &tv1;
-
-func int tfunc1(int a1, int a2) {
-    int rv, rtv, rv_ptr;
-
-    rv = 32;
-    rv += 2;
-    rv_ptr = &rv;
-
-    rtv = *rv_ptr;
-    *rv_ptr = 32;
-
-    return rv;
+func int putch(int ch) {
+    int ser_out = 0x101, ser_ready = 0x100;
+    *ser_out = ch;
+    *ser_ready = 0;
+    return;
 }
-
-func int tfunc2() { return; }

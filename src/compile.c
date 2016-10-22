@@ -136,7 +136,7 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
                 fprintf(out, "%s.ret, %s.ret\n%s, %s.ret\n", func->name, func->name, clbl, func->name);
             }
         }
-        fprintf(out, "ret\n");
+        fprintf(out, "ret\n\n");
     } else if(strstr(line, "++")) {
         // Increment variable
         char *lhs = strtok(line, "++");
@@ -282,9 +282,10 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
                 fprintf(out, "_ptr_rtv_%d.mv:\n0, _cZ\n_cZ, %s\n_cZ, _cZ\n", label_n, lhs_var);
                 label_n++;
             } else if(ptr_set) {
-                fprintf(out, "_ptr_set_%d.mv$0, _ptr_rtv_%d.mv$0\n_ptr_set_%d.mv$1, _ptr_rtv_%d.mv$1\n_ptr_set_%d.mv$7, _ptr_rtv_%d.mv$7\n", label_n, label_n, label_n, label_n, label_n, label_n);
+                fprintf(out, "_ptr_set_%d.mv$0, _ptr_set_%d.mv$0\n_ptr_set_%d.mv$1, _ptr_set_%d.mv$1\n_ptr_set_%d.mv$7, _ptr_set_%d.mv$7\n", label_n, label_n, label_n, label_n, label_n, label_n);
                 fprintf(out, "%s, _cZ\n_cZ, _ptr_set_%d.mv$0\n_cZ, _ptr_set_%d.mv$1\n_cZ, _ptr_set_%d.mv$7\n_cZ, _cZ\n", lhs_var, label_n, label_n, label_n);
                 fprintf(out, "_ptr_set_%d.mv:\n0, 0\n%s, _cZ\n _cZ, 0\n", label_n, rhs_var);
+                label_n++;
             } else {
                 fprintf(out, "%s, %s\n%s, _cZ\n_cZ, %s\n_cZ, _cZ\n", lhs_var, lhs_var, rhs_var, lhs_var);
             }
@@ -295,9 +296,10 @@ int compile_handle_func_stmt(char *line, func_ent_t *func) {
                 return 1;
             }
             if(ptr_set) {
-                fprintf(out, "_ptr_set_%d.mv$0, _ptr_rtv_%d.mv$0\n_ptr_set_%d.mv$1, _ptr_rtv_%d.mv$1\n_ptr_set_%d.mv$4, _ptr_rtv_%d.mv$4\n", label_n, label_n, label_n, label_n, label_n, label_n);
+                fprintf(out, "_ptr_set_%d.mv$0, _ptr_set_%d.mv$0\n_ptr_set_%d.mv$1, _ptr_set_%d.mv$1\n_ptr_set_%d.mv$4, _ptr_set_%d.mv$7\n", label_n, label_n, label_n, label_n, label_n, label_n);
                 fprintf(out, "%s, _cZ\n_cZ, _ptr_set_%d.mv$0\n_cZ, _ptr_set_%d.mv$1\n_cZ, _ptr_set_%d.mv$4\n_cZ, _cZ\n", lhs_var, label_n, label_n, label_n);
                 fprintf(out, "_ptr_set_%d.mv:\n0, 0\n%s, 0\n", label_n, clbl);
+                label_n++;
             } else {
                 fprintf(out, "%s, %s\n%s, %s\n", lhs_var, lhs_var, clbl, lhs_var);
             }
